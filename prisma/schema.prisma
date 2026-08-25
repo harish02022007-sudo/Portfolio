@@ -1,0 +1,201 @@
+// Prisma Schema for Harish R — Interactive AI Portfolio & CMS
+// Relational schema compatible with PostgreSQL and SQLite
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model AdminUser {
+  id                 String    @id @default(uuid())
+  username           String    @unique
+  passwordHash       String
+  mustChangePassword Boolean   @default(true)
+  lastLogin          DateTime?
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+}
+
+model Profile {
+  id           String   @id @default(uuid())
+  name         String
+  role         String
+  tagline      String
+  biography    String
+  location     String
+  focusAreas   String   // JSON string array
+  profileImage String?
+  resumeUrl    String?
+  availability Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model Education {
+  id          String   @id @default(uuid())
+  institution String
+  degree      String
+  field       String
+  semester    String
+  startYear   Int
+  endYear     Int?
+  cgpa        Float
+  description String
+  orderIndex  Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model SkillCategory {
+  id         String   @id @default(uuid())
+  name       String   @unique
+  orderIndex Int      @default(0)
+  skills     Skill[]
+}
+
+model Skill {
+  id              String        @id @default(uuid())
+  name            String
+  category        String
+  categoryId      String?
+  categoryRef     SkillCategory? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  level           String        // "Strong", "Intermediate", "Learning"
+  icon            String?
+  description     String?
+  isFocusArea     Boolean       @default(false)
+  relatedProjects String?       // JSON string array of project IDs
+  orderIndex      Int           @default(0)
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+}
+
+model Project {
+  id           String   @id @default(uuid())
+  title        String
+  subtitle     String
+  description  String
+  problem      String
+  solution     String
+  features     String   // JSON string array
+  technology   String   // JSON string array
+  architecture String?
+  results      String?
+  githubUrl    String?
+  liveDemoUrl  String?
+  images       String?  // JSON string array
+  videos       String?  // JSON string array
+  pipeline     String?  // JSON array: [{ step: "VIDEO", desc: "..." }, ...]
+  tags         String?  // JSON string array
+  status       String   @default("PUBLISHED") // "DRAFT" | "PUBLISHED" | "ARCHIVED"
+  isFeatured   Boolean  @default(false)
+  orderIndex   Int      @default(0)
+  date         String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model Research {
+  id              String   @id @default(uuid())
+  title           String
+  question        String
+  description     String
+  approach        String
+  currentStatus   String
+  futureDirection String?
+  tags            String?  // JSON string array
+  status          String   @default("PUBLISHED") // "DRAFT" | "PUBLISHED" | "ARCHIVED"
+  orderIndex      Int      @default(0)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model Achievement {
+  id             String   @id @default(uuid())
+  title          String
+  description    String
+  date           String
+  organization   String
+  imageUrl       String?
+  certificateUrl String?
+  url            String?
+  status         String   @default("PUBLISHED") // "DRAFT" | "PUBLISHED" | "ARCHIVED"
+  orderIndex     Int      @default(0)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+model Hackathon {
+  id             String   @id @default(uuid())
+  title          String
+  date           String
+  team           String
+  role           String
+  project        String
+  result         String
+  technologies   String   // JSON string array
+  imageUrl       String?
+  certificateUrl String?
+  url            String?
+  status         String   @default("PUBLISHED") // "DRAFT" | "PUBLISHED" | "ARCHIVED"
+  orderIndex     Int      @default(0)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+model Certification {
+  id             String   @id @default(uuid())
+  title          String
+  issuer         String
+  issueDate      String
+  credentialId   String?
+  credentialUrl  String?
+  imageUrl       String?
+  status         String   @default("PUBLISHED") // "DRAFT" | "PUBLISHED" | "ARCHIVED"
+  orderIndex     Int      @default(0)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+model SocialLink {
+  id         String   @id @default(uuid())
+  platform   String   @unique
+  url        String
+  icon       String?
+  orderIndex Int      @default(0)
+  isEnabled  Boolean  @default(true)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+model MediaItem {
+  id           String   @id @default(uuid())
+  filename     String
+  originalName String
+  mimeType     String
+  size         Int
+  url          String
+  createdAt    DateTime @default(now())
+}
+
+model SiteSetting {
+  id        String   @id @default(uuid())
+  key       String   @unique
+  value     String   // JSON payload string
+  updatedAt DateTime @updatedAt
+}
+
+model TimelineEntry {
+  id          String   @id @default(uuid())
+  year        String
+  title       String
+  subtitle    String
+  description String
+  tags        String?  // JSON array string
+  orderIndex  Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}

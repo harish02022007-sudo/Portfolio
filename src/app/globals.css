@@ -1,0 +1,107 @@
+@import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --color-bg-void: #050507;
+  --color-bg-dark: #08090D;
+  --color-bg-card: #0A0A0F;
+  --color-bg-surface: #101117;
+  --color-bg-border: #171923;
+  --color-cyan: #62E6FF;
+  --color-violet: #9B7CFF;
+  --color-green: #71F5A3;
+  --color-text-primary: #F4F5F7;
+  --color-text-secondary: #A0A4B2;
+  --color-text-muted: #656977;
+}
+
+html, body {
+  background-color: var(--color-bg-void);
+  color: var(--color-text-primary);
+  font-family: 'Inter', sans-serif;
+  overflow-x: hidden;
+  scroll-behavior: smooth;
+}
+
+/* Custom Luminous Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #050507;
+}
+::-webkit-scrollbar-thumb {
+  background: #171923;
+  border-radius: 3px;
+  border: 1px solid rgba(98, 230, 255, 0.2);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #62E6FF;
+  box-shadow: 0 0 10px rgba(98, 230, 255, 0.5);
+}
+
+/* Glassmorphism utility classes */
+.glass-panel {
+  background: rgba(10, 10, 15, 0.75);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.glass-panel-cyan {
+  background: rgba(8, 9, 13, 0.85);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(98, 230, 255, 0.25);
+  box-shadow: 0 0 20px rgba(98, 230, 255, 0.08);
+}
+
+.hud-border {
+  position: relative;
+}
+.hud-border::before {
+  content: '';
+  position: absolute;
+  top: -1px;
+  left: -1px;
+  width: 8px;
+  height: 8px;
+  border-top: 2px solid #62E6FF;
+  border-left: 2px solid #62E6FF;
+}
+.hud-border::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  right: -1px;
+  width: 8px;
+  height: 8px;
+  border-bottom: 2px solid #9B7CFF;
+  border-right: 2px solid #9B7CFF;
+}
+
+/* Glowing text effects */
+.glow-cyan {
+  color: #62E6FF;
+  text-shadow: 0 0 12px rgba(98, 230, 255, 0.6);
+}
+.glow-violet {
+  color: #9B7CFF;
+  text-shadow: 0 0 12px rgba(155, 124, 255, 0.6);
+}
+
+/* Technical grid background */
+.tech-grid {
+  background-image: linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                    linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
+/* Selection highlight */
+::selection {
+  background: rgba(98, 230, 255, 0.25);
+  color: #62E6FF;
+}
