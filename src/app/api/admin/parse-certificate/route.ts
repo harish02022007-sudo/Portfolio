@@ -39,27 +39,36 @@ export async function POST(req: NextRequest) {
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
 
-    const uploadsDir = path.join(process.cwd(), 'public', 'uploads');
-    await mkdir(uploadsDir, { recursive: true });
+    let publicUrl = '';
+    let safeFilename = `cert-${Date.now()}-${Math.random().toString(36).substring(2, 8)}${path.extname(file.name) || '.pdf'}`;
 
-    const ext = path.extname(file.name) || '.pdf';
-    const safeFilename = `cert-${Date.now()}-${Math.random().toString(36).substring(2, 8)}${ext}`;
-    const filePath = path.join(uploadsDir, safeFilename);
+    try {
+      const uploadsDir = path.join(process.cwd(), 'public', 'uploads');
+      await mkdir(uploadsDir, { recursive: true });
+      const filePath = path.join(uploadsDir, safeFilename);
+      await writeFile(filePath, buffer);
+      publicUrl = `/uploads/${safeFilename}`;
+    } catch (fsErr) {
+      // Fallback for Vercel / serverless environment (read-only filesystem)
+      const base64 = buffer.toString('base64');
+      const mime = file.type || 'application/pdf';
+      publicUrl = `data:${mime};base64,${base64}`;
+    }
 
-    await writeFile(filePath, buffer);
-
-    const publicUrl = `/uploads/${safeFilename}`;
-
-    // Save record to MediaItem database
-    await db.mediaItem.create({
-      data: {
-        filename: safeFilename,
-        originalName: file.name,
-        mimeType: file.type,
-        size: file.size,
-        url: publicUrl,
-      },
-    });
+    // Save record to MediaItem database table
+    try {
+      await db.mediaItem.create({
+        data: {
+          filename: safeFilename,
+          originalName: file.name,
+          mimeType: file.type,
+          size: file.size,
+          url: publicUrl,
+        },
+      });
+    } catch (dbErr) {
+      console.warn('Could not store MediaItem entry:', dbErr);
+    }
 
     // Intelligent Certificate Auto-Detection & Parser Logic
     const rawName = file.name.replace(/\.[^/.]+$/, '').replace(/[-_]/g, ' ');
@@ -84,7 +93,6 @@ export async function POST(req: NextRequest) {
       .trim();
 
     if (titleClean.length > 3) {
-      // Capitalize title
       detectedTitle = titleClean
         .split(' ')
         .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
@@ -113,6 +121,6 @@ export async function POST(req: NextRequest) {
     });
   } catch (error: any) {
     console.error('Certificate parsing error:', error);
-    return NextResponse.json({ error: 'Failed to process certificate file' }, { status: 500 });
+    return NextResponse.json({ error: error.message || 'Failed to process certificate file' }, { status: 500 });
   }
 }

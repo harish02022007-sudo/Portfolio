@@ -12,6 +12,11 @@ export default function AdminLoginPage() {
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
 
+  // Force session logout whenever login page is accessed so user MUST log in every time
+  React.useEffect(() => {
+    fetch('/api/auth/logout', { method: 'POST' }).catch(() => {});
+  }, []);
+
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);

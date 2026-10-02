@@ -81,7 +81,7 @@ export function Navigation({ activeSection, onNavigate }: NavigationProps) {
         {/* Admin Gateway Link */}
         <div className="hidden md:flex items-center gap-3">
           <a
-            href="/admin"
+            href="/admin/login"
             className="font-mono text-xs px-3.5 py-2 rounded-xl border border-bg-border bg-bg-surface/50 text-text-secondary hover:text-cyan-accent hover:border-cyan-accent/40 transition-all"
           >
             [ ADMIN CMS ]
@@ -121,7 +121,7 @@ export function Navigation({ activeSection, onNavigate }: NavigationProps) {
           })}
 
           <a
-            href="/admin"
+            href="/admin/login"
             className="block text-center w-full py-3 rounded-xl border border-cyan-accent/40 bg-cyan-accent/10 text-cyan-accent font-mono text-xs font-bold"
           >
             LOGIN TO ADMIN CMS ↗

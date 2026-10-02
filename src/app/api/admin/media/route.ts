@@ -47,16 +47,22 @@ export async function POST(req: NextRequest) {
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
 
-    const uploadsDir = path.join(process.cwd(), 'public', 'uploads');
-    await mkdir(uploadsDir, { recursive: true });
-
+    let publicUrl = '';
     const ext = path.extname(file.name) || '.bin';
     const safeFilename = `${Date.now()}-${Math.random().toString(36).substring(2, 8)}${ext}`;
-    const filePath = path.join(uploadsDir, safeFilename);
 
-    await writeFile(filePath, buffer);
-
-    const publicUrl = `/uploads/${safeFilename}`;
+    try {
+      const uploadsDir = path.join(process.cwd(), 'public', 'uploads');
+      await mkdir(uploadsDir, { recursive: true });
+      const filePath = path.join(uploadsDir, safeFilename);
+      await writeFile(filePath, buffer);
+      publicUrl = `/uploads/${safeFilename}`;
+    } catch (fsErr) {
+      // Fallback for Vercel read-only filesystem
+      const base64 = buffer.toString('base64');
+      const mime = file.type || 'application/octet-stream';
+      publicUrl = `data:${mime};base64,${base64}`;
+    }
 
     const mediaRecord = await db.mediaItem.create({
       data: {
@@ -71,6 +77,6 @@ export async function POST(req: NextRequest) {
     return NextResponse.json(mediaRecord, { status: 201 });
   } catch (error: any) {
     console.error('Media upload error:', error);
-    return NextResponse.json({ error: 'Failed to upload media file' }, { status: 500 });
+    return NextResponse.json({ error: error.message || 'Failed to upload media file' }, { status: 500 });
   }
 }
